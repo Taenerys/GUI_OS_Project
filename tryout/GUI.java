@@ -1,5 +1,4 @@
-package tryout;
-
+package Scheduling;
 
 import java.applet.*;
 import java.awt.*;
@@ -7,7 +6,7 @@ import java.awt.event.*;
 
 public class GUI extends Applet implements ActionListener{
 	
-	int process, burstTime, temp, totalTurnAroundTime, totalWaitingTime ;
+	int process, burstTime, temp, totalTurnAroundTime, totalWaitingTime;
 	float avgWaitingTime, avgTurnAroundTime;
 	int[] processIDs, burstTimes, arrivalTimes, completionTimes, waitingTimes, turnAroundTimes;
 	String algorithm, choice;
@@ -21,8 +20,8 @@ public class GUI extends Applet implements ActionListener{
 
 		l1 = new Label("Enter number of processes: ");
 		l2 = new Label("Choose an algorithm: ");
-		l3 = new Label("Arrival times of the processes: ");
-		l4 = new Label("Burst times of the processes: ");
+		l3 = new Label("Arrival times (separated by space): ");
+		l4 = new Label("Burst times (separated by space): ");
 		t1 = new TextField(5);
 		t2 = new TextField(10);
 		t3 = new TextField(10);
@@ -214,7 +213,93 @@ public class GUI extends Applet implements ActionListener{
 				break;
 				
 			case "Shortest Remaining Time":
+				        
+				int totalBurstTime =0, k=0, co=0, small=999, sp=0, sp1=0, x=0, count=0;
+				totalWaitingTime = 0;
+				totalTurnAroundTime = 0;
+				int pro[][]=new int[process][3];
+			 	int[] awt1 = new int [20];
+			 	processIDs = new int[20];
+
+				for(int v = 0; v < process; v++) {
+					pro[v][0]= v;
+
+					pro[v][1] = burstTimes[v];
+					totalBurstTime += pro[v][1];
+
+					pro[v][2]= arrivalTimes[v];
+				}
 				
+				// sort arrival times
+				for(int l3=0; l3 < process;l3++)
+					for(int j1= l3 +1;j1 < process; j1++)
+						if(pro[l3][2]>pro[j1][2]) {
+							int temp[]=pro[l3];
+							pro[l3]=pro[j1];
+							pro[j1]=temp;
+						}
+				
+				//do shortest remaining time algorithm
+				for(int l4 =1; l4 <= totalBurstTime;l4++) {
+					small = 999;
+					for(int j = co;j < process;j++)
+						if(k >= pro[j][2])
+							co++;
+					for(int j=0;j < co;j++) {
+						if(small>pro[j][1] && pro[j][1]!=0) {
+							small=pro[j][1];
+							sp=pro[j][0];
+							sp1=j;
+						}
+					}
+					
+					if(processIDs[x] == sp) {
+						awt1[x+1]++;
+					} else {
+						x++;
+						processIDs[x]=sp;
+						awt1[x+1]= awt1[x];
+						awt1[x+1]++;
+						count++;
+					}
+					
+					pro[sp1][1]-=1;
+					if(pro[sp1][1]==0)
+						turnAroundTimes[sp1] = l4;
+					for(int j=0;j < process;j++) {
+						if(pro[j][1]!=0 && j!=sp)
+							waitingTimes[j]+=1;
+					}
+					k++;
+				}
+				
+				for(int m =0;m < process; m++)
+					for(int j=m+1;j< process;j++)
+						if(pro[m][0]>pro[j][0]) {
+							int temp[]=pro[m];
+							pro[m]=pro[j];
+							pro[j]=temp;
+							int tem= waitingTimes[m], tem1= turnAroundTimes[m];
+							waitingTimes[m] = waitingTimes[j];
+							waitingTimes[j] = tem;
+							turnAroundTimes [m] = turnAroundTimes[j];
+							turnAroundTimes[j] = tem1;
+						}
+
+				for(int m=0; m<= count; m++)
+					processIDs[m] += 1;
+				
+				for (int i1 = 0; i1 < process; i1++) {
+					totalWaitingTime += waitingTimes [i1]- arrivalTimes[i1];
+				}
+				
+				for (int i2 = 0; i2 < process; i2++) {
+					totalTurnAroundTime += waitingTimes[i2] - arrivalTimes[i2] + burstTimes[i2];
+				}
+				
+				avgWaitingTime = totalWaitingTime/process;
+				avgTurnAroundTime = totalTurnAroundTime/process;
+			
 				break;
 				
 			case "HRRN": 
@@ -244,8 +329,8 @@ public class GUI extends Applet implements ActionListener{
 
 				//finds average turn around time. 
 				float ttt6 = 0;
-				for(int k = 0; k < process; k++) {
-					ttt6 = ttt6 + Pro6[k].getTt();
+				for(int k1 = 0; k1 < process; k1++) {
+					ttt6 = ttt6 + Pro6[k1].getTt();
 				}
 				avgTurnAroundTime = ttt6 /process;
 				break;
