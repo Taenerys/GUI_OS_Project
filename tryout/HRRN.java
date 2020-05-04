@@ -1,4 +1,4 @@
-package tryout;
+package Scheduling;
 
 public class HRRN {
 	
