@@ -1,5 +1,5 @@
 
-package tryout;
+package Scheduling;
 
 public class Process { 
 	
